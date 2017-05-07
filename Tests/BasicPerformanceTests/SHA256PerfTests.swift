@@ -30,7 +30,7 @@ class SHA256PerfTests: XCTestCasePerf {
 
     func sha256(_ data: [UInt8]) -> String {
         var digestData = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
-        CC_SHA256(data, CC_LONG(CC_SHA256_DIGEST_LENGTH), &digestData)
+        CC_SHA256(data, CC_LONG(data.count), &digestData)
         return digestData.reduce("") {
             var str = String($1, radix: 16)
             if str.characters.count == 1 {

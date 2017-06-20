@@ -72,6 +72,7 @@ final class BuildPlanTests: XCTestCase {
 
         XCTAssertEqual(try result.buildProduct(for: "exe").linkArguments(), ["/fake/path/to/swiftc", "-g", "-L", "/path/to/build/debug",
             "-o", "/path/to/build/debug/exe", "-module-name", "exe", 
+            "-static-stdlib",
             "-emit-executable",
             "/path/to/build/debug/exe.build/main.swift.o",
             "/path/to/build/debug/lib.build/lib.swift.o",
@@ -92,7 +93,7 @@ final class BuildPlanTests: XCTestCase {
         let exe = try result.target(for: "exe").swiftTarget().compileArguments()
         XCTAssertEqual(exe, ["-swift-version", "3", "-O", "-j8", "-DSWIFT_PACKAGE", "-module-cache-path", "/path/to/build/release/ModuleCache"])
 
-        XCTAssertEqual(try result.buildProduct(for: "exe").linkArguments(), ["/fake/path/to/swiftc", "-L", "/path/to/build/release", "-o", "/path/to/build/release/exe", "-module-name", "exe", "-emit-executable", "/path/to/build/release/exe.build/main.swift.o"])
+        XCTAssertEqual(try result.buildProduct(for: "exe").linkArguments(), ["/fake/path/to/swiftc", "-L", "/path/to/build/release", "-o", "/path/to/build/release/exe", "-module-name", "exe", "-static-stdlib", "-emit-executable", "/path/to/build/release/exe.build/main.swift.o"])
     }
 
     func testBasicClangPackage() throws {
@@ -143,7 +144,7 @@ final class BuildPlanTests: XCTestCase {
         XCTAssertEqual(exe.moduleMap, nil)
 
         XCTAssertEqual(try result.buildProduct(for: "exe").linkArguments(), ["/fake/path/to/swiftc", "-g", "-L", "/path/to/build/debug",
-            "-o", "/path/to/build/debug/exe", "-module-name", "exe", "-emit-executable", 
+            "-o", "/path/to/build/debug/exe", "-module-name", "exe", "-static-stdlib", "-emit-executable", 
             "/path/to/build/debug/exe.build/main.c.o",
             "/path/to/build/debug/extlib.build/extlib.c.o",
             "/path/to/build/debug/lib.build/lib.c.o",
@@ -182,7 +183,7 @@ final class BuildPlanTests: XCTestCase {
         XCTAssertEqual(exe, ["-swift-version", "3", "-Onone", "-g", "-enable-testing", "-j8", "-DSWIFT_PACKAGE", "-Xcc", "-fmodule-map-file=/path/to/build/debug/lib.build/module.modulemap", "-I", "/Pkg/Sources/lib/include", "-module-cache-path", "/path/to/build/debug/ModuleCache"])
 
         XCTAssertEqual(try result.buildProduct(for: "exe").linkArguments(), ["/fake/path/to/swiftc", "-g", "-L", "/path/to/build/debug",
-            "-o", "/path/to/build/debug/exe", "-module-name", "exe", "-emit-executable",
+            "-o", "/path/to/build/debug/exe", "-module-name", "exe", "-static-stdlib", "-emit-executable",
             "/path/to/build/debug/exe.build/main.swift.o",
             "/path/to/build/debug/lib.build/lib.c.o",
         ])
@@ -245,7 +246,7 @@ final class BuildPlanTests: XCTestCase {
         result.checkProductsCount(1)
         result.checkTargetsCount(1)
 
-        XCTAssertEqual(try result.buildProduct(for: "exe").linkArguments(), ["/fake/path/to/swiftc", "-g", "-L", "/path/to/build/debug", "-o", "/path/to/build/debug/exe", "-module-name", "exe", "-emit-executable", "/path/to/build/debug/exe.build/main.swift.o"])
+        XCTAssertEqual(try result.buildProduct(for: "exe").linkArguments(), ["/fake/path/to/swiftc", "-g", "-L", "/path/to/build/debug", "-o", "/path/to/build/debug/exe", "-module-name", "exe", "-static-stdlib", "-emit-executable", "/path/to/build/debug/exe.build/main.swift.o"])
         XCTAssertEqual(try result.target(for: "exe").swiftTarget().compileArguments(), ["-swift-version", "3", "-Onone", "-g", "-enable-testing", "-j8", "-DSWIFT_PACKAGE", "-Xcc", "-fmodule-map-file=/Clibgit/module.modulemap", "-module-cache-path", "/path/to/build/debug/ModuleCache"])
     }
 
@@ -306,7 +307,7 @@ final class BuildPlanTests: XCTestCase {
 
         let fooLinkArgs = try result.buildProduct(for: "Foo").linkArguments()
         XCTAssertEqual(fooLinkArgs,
-            ["/fake/path/to/swiftc", "-g", "-L", "/path/to/build/debug", "-o", "/path/to/build/debug/Foo", "-module-name", "Foo", "-lBar", "-emit-executable", "/path/to/build/debug/Foo.build/main.swift.o"])
+            ["/fake/path/to/swiftc", "-g", "-L", "/path/to/build/debug", "-o", "/path/to/build/debug/Foo", "-module-name", "Foo", "-lBar", "-static-stdlib", "-emit-executable", "/path/to/build/debug/Foo.build/main.swift.o"])
 
         let barLinkArgs = try result.buildProduct(for: "Bar").linkArguments()
         XCTAssertEqual(barLinkArgs,

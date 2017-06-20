@@ -196,6 +196,11 @@ public class SwiftTool<Options: ToolOptions> {
                 usage: "Increase verbosity of informational output"),
             to: { $0.verbosity = $1 ? 1 : 0 })
 
+        binder.bind(
+            option: parser.add(option: "--no-static-swift-stdlib", kind: Bool.self,
+                usage: "Do not link Swift stdlib statically"),
+            to: { $0.shouldLinkStaticSwiftStdlib = !$1 })
+
         // Let subclasses bind arguments.
         type(of: self).defineArguments(parser: parser, binder: binder)
 
@@ -423,7 +428,9 @@ public class SwiftTool<Options: ToolOptions> {
                 dataPath: buildPath,
                 configuration: options.configuration,
                 toolchain: try getToolchain(),
-                flags: options.buildFlags),
+                flags: options.buildFlags,
+                shouldLinkStaticSwiftStdlib: options.shouldLinkStaticSwiftStdlib
+            ),
             graph: try loadPackageGraph(),
             delegate: self)
     }
